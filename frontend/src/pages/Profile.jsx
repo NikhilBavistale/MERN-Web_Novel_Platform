@@ -18,6 +18,7 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { app } from "../firebase";
+import { useNavigate } from "react-router-dom";
 const Profile = () => {
   const dispatch = useDispatch();
   const fileRef = useRef(null);
@@ -26,8 +27,9 @@ const Profile = () => {
   const [imageError, setImageError] = useState(false);
   const [formData, setFormData] = useState({});
   const [updateSuccess, setUpdateSuccess] = useState(false);
-
+  const navigate = useNavigate();
   const { currentUser, loading, error } = useSelector((state) => state.user);
+ 
   useEffect(() => {
     if (image) {
       handleFileUpload(image);
@@ -85,7 +87,7 @@ const Profile = () => {
     try {
       dispatch(deleteUserStart());
       const res = await fetch(`/api/user/delete/${currentUser._id}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
       const data = await res.json();
       if (data.success === false) {
@@ -99,11 +101,26 @@ const Profile = () => {
   };
   const handleSignOut = async () => {
     try {
-      await fetch('/api/auth/signout');
-      dispatch(signOut())
+      await fetch("/api/auth/signout");
+      dispatch(signOut());
+      navigate("/sign-in");
     } catch (error) {
       console.log(error);
     }
+  };
+  if (!currentUser) {
+    return null;
+  }
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    let month = "" + (date.getMonth() + 1);
+    let day = "" + date.getDate();
+    const year = date.getFullYear();
+
+    if (month.length < 2) month = "0" + month;
+    if (day.length < 2) day = "0" + day;
+
+    return [year, month, day].join("-");
   };
 
   return (
@@ -201,7 +218,7 @@ const Profile = () => {
             <input
               id="dob"
               type="date"
-              defaultValue={currentUser.dob}
+              defaultValue={formatDate(currentUser.dob)}
               onChange={handleChange}
               className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
             />
@@ -241,19 +258,24 @@ const Profile = () => {
             />
           </div>
         </div>
-        <Button disabled={loading} type="submit"  className="mt-10">
-        {loading ? 'Loading...' : 'Update'}
+        <Button disabled={loading} type="submit" className="mt-10">
+          {loading ? "Loading..." : "Update"}
         </Button>
       </form>
-        <div className="flex justify-between mt-5">
-          <span onClick={handleDeleteAccount} className="text-red-700 cursor-pointer">Delete Account</span>
-          <span onClick={handleSignOut} className='text-red-700 cursor-pointer'>
+      <div className="flex justify-between mt-5">
+        <span
+          onClick={handleDeleteAccount}
+          className="text-red-700 cursor-pointer"
+        >
+          Delete Account
+        </span>
+        <span onClick={handleSignOut} className="text-red-700 cursor-pointer">
           Sign out
         </span>
-        </div>
-        <p className='text-red-700 mt-5'>{error && 'Something went wrong!'}</p>
-      <p className='text-green-700 mt-5'>
-        {updateSuccess && 'User is updated successfully!'}
+      </div>
+      <p className="text-red-700 mt-5">{error && "Something went wrong!"}</p>
+      <p className="text-green-700 mt-5">
+        {updateSuccess && "User is updated successfully!"}
       </p>
     </div>
   );
