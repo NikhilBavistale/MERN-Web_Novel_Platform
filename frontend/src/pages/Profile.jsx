@@ -169,6 +169,20 @@ const Profile = () => {
               rows={6}
             />
           </div>
+          {/* Password  */}
+          <div className="lg:w-1/2">
+            <div className="mb-2 block">
+              <Label htmlFor="password" value="Password" />
+            </div>
+            <input
+              id="password"
+              type="password"
+              defaultValue={currentUser.password}
+              onChange={handleChange}
+              placeholder="Enter new password"
+              className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
+            />
+          </div>
         </div>
         <Button type="submit" className="mt-10">
           Save
