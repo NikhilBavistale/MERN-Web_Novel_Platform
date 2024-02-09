@@ -1,20 +1,24 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import {
+  loginStart,
+  loginSuccess,
+  loginFailure,
+} from "../redux/user/userSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const Login = () => {
   const [formData, setFormData] = useState({});
-  const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const navigate=useNavigate();
+  const { loading, error } = useSelector((state) => state.user);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      setLoading(true);
-      setError(false);
-
+      dispatch(loginStart());
       const res = await fetch("/api/auth/signin", {
         method: "POST",
         headers: {
@@ -23,15 +27,14 @@ const Login = () => {
         body: JSON.stringify(formData),
       });
       const data = await res.json();
-      setLoading(false);
       if (data.success === false) {
-        setError(true);
+        dispatch(loginFailure(data));
         return;
       }
-      navigate("/")
+      dispatch(loginSuccess(data));
+      navigate("/");
     } catch (error) {
-      setLoading(false);
-      setError(true);
+      dispatch(loginFailure(error));
     }
   };
   return (
@@ -61,7 +64,6 @@ const Login = () => {
                 onChange={handleChange}
                 placeholder="Enter Email Address"
                 className="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none"
-                autoFocus
                 required
               />
             </div>
@@ -89,18 +91,13 @@ const Login = () => {
             </button>
           </form>
 
-          {error ? (
-            <p className="text-red-600 text-base">
-              {" "}
-              "Email or Password is not Correct:"{" "}
-            </p>
-          ) : (
-            ""
-          )}
+          <p className='text-red-700 mt-5'>
+        {error ? error.message || 'Something went wrong!' : ''}
+      </p>
           <p className="mt-8">
             Don't have an account yet?{" "}
             <Link
-              to="/register"
+              to="/sign-up"
               className="text-blue-500 hover:text-blue-700 font-semibold"
             >
               Sign Up
