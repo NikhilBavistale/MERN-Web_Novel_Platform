@@ -26,7 +26,7 @@ const Header = () => {
           </Link>
 
           <Link
-            to="/profile"
+            to={currentUser ? "/profile" : "/sign-in"}
             className="block text-base text-black uppercase cursor-pointer hover:text-white ml-4"
           >
             {currentUser ? (
