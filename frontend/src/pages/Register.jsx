@@ -28,7 +28,7 @@ const Register = () => {
         setError(true);
         return;
       }
-      navigate("/login");
+      navigate("/sign-in");
     } catch (error) {
       setLoading(false);
       setError(true);
@@ -118,7 +118,7 @@ const Register = () => {
           <p className="mt-8">
             Already have an account?{" "}
             <Link
-              to="/login"
+              to="/sign-in"
               className="text-blue-500 hover:text-blue-700 font-semibold"
             >
               Login Here

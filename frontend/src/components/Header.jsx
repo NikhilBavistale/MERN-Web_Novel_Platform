@@ -17,11 +17,11 @@ const Header = () => {
             <li>About</li>
           </Link>
 
-          <Link to="/login" className="block text-base text-black uppercase cursor-pointer hover:text-white ml-4">
+          <Link to="/sign-in" className="block text-base text-black uppercase cursor-pointer hover:text-white ml-4">
             <li>Login</li>
           </Link>
 
-          <Link to="/register" className="block text-base text-black uppercase cursor-pointer hover:text-white ml-4">
+          <Link to="/sign-up" className="block text-base text-black uppercase cursor-pointer hover:text-white ml-4">
             <li>Register</li>
           </Link>
         </ul>
