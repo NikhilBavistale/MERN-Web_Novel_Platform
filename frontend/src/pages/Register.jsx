@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [formData, setFormData] = useState({});
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
@@ -14,7 +15,7 @@ const Register = () => {
       setLoading(true);
       setError(false);
 
-      const res = await fetch("/api/auth/register", {
+      const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -27,6 +28,7 @@ const Register = () => {
         setError(true);
         return;
       }
+      navigate("/login");
     } catch (error) {
       setLoading(false);
       setError(true);
@@ -90,9 +92,6 @@ const Register = () => {
                 required
               />
             </div>
-            <p className="text-red-700 mt-2">
-              {error && "somthing went wrong"}
-            </p>
 
             <div className="text-right mt-2">
               <a
@@ -112,7 +111,9 @@ const Register = () => {
               {loading ? "Loading..." : "Sign Up"}
             </button>
           </form>
-
+          <p className="text-red-600 text-base">
+            {error && "somthing went wrong"}
+          </p>
           {/* Sign In Link */}
           <p className="mt-8">
             Already have an account?{" "}
