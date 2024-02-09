@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import OAuth from "../components/OAuth";
 
 const Register = () => {
   const [formData, setFormData] = useState({});
@@ -111,6 +112,8 @@ const Register = () => {
               {loading ? "Loading..." : "Sign Up"}
             </button>
           </form>
+          <hr className="my-6 border-gray-300 w-full" />
+          <OAuth />
           <p className="text-red-600 text-base">
             {error && "somthing went wrong"}
           </p>
