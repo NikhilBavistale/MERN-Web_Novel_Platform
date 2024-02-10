@@ -1,6 +1,13 @@
 import { Button, Label, Textarea } from "flowbite-react";
 import { useSelector } from "react-redux";
 import { useRef, useState, useEffect } from "react";
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytesResumable,
+} from "firebase/storage";
+import { app } from "../firebase";
 import { useDispatch } from "react-redux";
 import {
   updateUserStart,
@@ -11,14 +18,8 @@ import {
   deleteUserFailure,
   signOut,
 } from "../redux/user/userSlice";
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytesResumable,
-} from "firebase/storage";
-import { app } from "../firebase";
 import { useNavigate } from "react-router-dom";
+
 const Profile = () => {
   const dispatch = useDispatch();
   const fileRef = useRef(null);
@@ -29,7 +30,7 @@ const Profile = () => {
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const navigate = useNavigate();
   const { currentUser, loading, error } = useSelector((state) => state.user);
- 
+
   useEffect(() => {
     if (image) {
       handleFileUpload(image);
@@ -58,9 +59,11 @@ const Profile = () => {
       }
     );
   };
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -83,7 +86,9 @@ const Profile = () => {
       dispatch(updateUserFailure(error));
     }
   };
+
   const handleDeleteAccount = async () => {
+    if (!currentUser) return;
     try {
       dispatch(deleteUserStart());
       const res = await fetch(`/api/user/delete/${currentUser._id}`, {
@@ -100,10 +105,11 @@ const Profile = () => {
     }
   };
   const handleSignOut = async () => {
+    if (!currentUser) return;
     try {
       await fetch("/api/auth/signout");
       dispatch(signOut());
-      navigate("/sign-in");
+      navigate('/sign-in');
     } catch (error) {
       console.log(error);
     }
@@ -225,7 +231,7 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* third row containing profile picture and about me */}
+        {/* third row containing about me and password*/}
         <div className="flex gap-8">
           {/* About me section */}
           <div className="lg:w-1/2 ">
@@ -258,6 +264,7 @@ const Profile = () => {
             />
           </div>
         </div>
+
         <Button disabled={loading} type="submit" className="mt-10">
           {loading ? "Loading..." : "Update"}
         </Button>
