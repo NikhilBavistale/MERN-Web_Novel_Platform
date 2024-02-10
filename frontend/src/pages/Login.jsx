@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   loginStart,
@@ -11,8 +11,10 @@ import OAuth from "../components/OAuth";
 const Login = () => {
   const [formData, setFormData] = useState({});
   const { loading, error } = useSelector((state) => state.user);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
@@ -92,10 +94,10 @@ const Login = () => {
             </button>
           </form>
           <hr className="my-6 border-gray-300 w-full" />
-<OAuth/>
-          <p className='text-red-700 mt-5'>
-        {error ? error.message || 'Something went wrong!' : ''}
-      </p>
+          <OAuth />
+          <p className="text-red-700 mt-5">
+            {error ? error.message || "Something went wrong!" : ""}
+          </p>
           <p className="mt-8">
             Don't have an account yet?{" "}
             <Link
