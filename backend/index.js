@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import userRoutes from "./routes/user-route.js";
 import authRoutes from "./routes/auth-route.js";
+import novelRoutes from "./routes/novel-route.js";
 import cookieParser from "cookie-parser";
 import path from "path";
 dotenv.config();
@@ -29,6 +30,7 @@ app.use(cookieParser());
 // Use your API routes here
 app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/novels", novelRoutes);
 
 // Then use the catch-all route handler
 app.get("*", (req, res) => {
