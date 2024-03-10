@@ -70,7 +70,7 @@ const OAuth = () => {
             d="M48 48L17 24l-4-3 35-10z"
           />
         </svg>
-        <span className="ml-4">Sign Up with Google</span>
+        <span className="ml-4">Continue with Google</span>
       </div>
     </button>
   );
