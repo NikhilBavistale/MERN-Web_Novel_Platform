@@ -2,8 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   currentUser: null,
+  error: null,
   loading: false,
-  error: false,
 };
 
 const userSlice = createSlice({
@@ -12,35 +12,38 @@ const userSlice = createSlice({
   reducers: {
     loginStart: (state) => {
       state.loading = true;
+      state.error = null;
     },
     loginSuccess: (state, action) => {
       state.currentUser = action.payload;
       state.loading = false;
-      state.error = false;
+      state.error = null;
     },
     loginFailure: (state, action) => {
       state.loading = false;
       state.error = action.payload;
     },
-    updateUserStart: (state) => {
+    updateStart: (state) => {
       state.loading = true;
+      state.error = null;
     },
-    updateUserSuccess: (state, action) => {
+    updateSuccess: (state, action) => {
       state.currentUser = action.payload;
       state.loading = false;
-      state.error = false;
+      state.error = null;
     },
-    updateUserFailure: (state, action) => {
+    updateFailure: (state, action) => {
       state.loading = false;
       state.error = action.payload;
     },
     deleteUserStart: (state) => {
       state.loading = true;
+      state.error = null;
     },
     deleteUserSuccess: (state) => {
       state.currentUser = null;
       state.loading = false;
-      state.error = false;
+      state.error = null;
     },
     deleteUserFailure: (state, action) => {
       state.loading = false;
@@ -48,9 +51,13 @@ const userSlice = createSlice({
     },
     signOut: (state) => {
       state.currentUser = null;
+      state.error = null;
       state.loading = false;
-      state.error = false;
     },
+    addFavoriteNovel: (state, action) => {
+      state.currentUser.favorites.push(action.payload);
+    },
+
   },
 });
 
@@ -58,13 +65,14 @@ export const {
   loginStart,
   loginSuccess,
   loginFailure,
-  updateUserStart,
-  updateUserSuccess,
-  updateUserFailure,
+  updateStart,
+  updateSuccess,
+  updateFailure,
   deleteUserStart,
   deleteUserSuccess,
   deleteUserFailure,
   signOut,
+  addFavoriteNovel,
 } = userSlice.actions;
 
 export default userSlice.reducer;
