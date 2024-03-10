@@ -7,10 +7,11 @@ import {
 } from "../redux/user/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 import OAuth from "../components/OAuth";
+import { Alert, Button, Spinner, TextInput } from "flowbite-react";
 
 const Login = () => {
   const [formData, setFormData] = useState({});
-  const { loading, error } = useSelector((state) => state.user);
+  const { loading, error: errorMessage } = useSelector((state) => state.user);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -20,94 +21,100 @@ const Login = () => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!formData.email || !formData.password) {
+      return dispatch(loginFailure("Please fill all the fields"));
+    }
     try {
       dispatch(loginStart());
       const res = await fetch("/api/auth/signin", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
       const data = await res.json();
       if (data.success === false) {
-        dispatch(loginFailure(data));
-        return;
+        dispatch(loginFailure(data.message));
       }
-      dispatch(loginSuccess(data));
-      navigate("/");
+
+      if (res.ok) {
+        dispatch(loginSuccess(data));
+        navigate("/");
+      }
     } catch (error) {
-      dispatch(loginFailure(error));
+      dispatch(loginFailure(error.message));
     }
   };
   return (
     <section className="flex flex-col md:flex-row h-screen items-center">
-      <div className="bg-indigo-600 hidden lg:block w-full md:w-1/2 xl:w-2/3 h-screen">
+      <div className="hidden lg:block w-full md:w-1/2 xl:w-2/3 h-screen">
         <img
           src="https://source.unsplash.com/random"
           alt=""
           className="w-full h-full object-cover"
         />
       </div>
-
+      {/* right  */}
       <div
-        className="bg-white w-full md:max-w-md lg:max-w-full md:mx-auto md:w-1/2 xl:w-1/3 h-screen px-6 lg:px-16 xl:px-12
+        className="w-full md:max-w-md lg:max-w-full md:mx-auto md:w-1/2 xl:w-1/3 h-screen px-6 lg:px-16 xl:px-12
       flex items-center justify-center"
       >
         <div className="w-full h-100">
-          <h1 className="text-xl md:text-2xl font-bold leading-tight mt-12">
+          <h1 className="text-xl md:text-2xl font-bold leading-tight">
             Sign In to your account
           </h1>
+          <div className="flex-1 ">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-6">
+              <div>
+                <TextInput
+                  type="email"
+                  id="email"
+                  onChange={handleChange}
+                  placeholder="Enter Email Address"
+                  required
+                />
+              </div>
 
-          <form onSubmit={handleSubmit} className="mt-6">
-            <div>
-              <input
-                type="email"
-                id="email"
-                onChange={handleChange}
-                placeholder="Enter Email Address"
-                className="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none"
-                required
-              />
+              <div className="mt-4">
+                <TextInput
+                  type="password"
+                  id="password"
+                  onChange={handleChange}
+                  placeholder="***************"
+                  minLength="6"
+                  required
+                />
+              </div>
+
+              <Button
+                disabled={loading}
+                type="submit"
+                gradientDuoTone="purpleToPink"
+              >
+                {loading ? (
+                  <>
+                    <Spinner size="sm" />
+                    <span className="pl-3">Loading...</span>
+                  </>
+                ) : (
+                  "Sign In"
+                )}
+              </Button>
+            </form>
+            <hr className="my-6 border-gray-300 w-full" />
+            <OAuth />
+
+            <div className="flex gap-2 text-sm mt-5">
+              <span>Dont Have an account?</span>
+              <Link to="/sign-up" className="text-blue-500">
+                Sign Up
+              </Link>
             </div>
-
-            <div className="mt-4">
-              <input
-                type="password"
-                id="password"
-                onChange={handleChange}
-                placeholder="Enter Password"
-                minLength="6"
-                className="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500
-              focus:bg-white focus:outline-none"
-                required
-              />
-            </div>
-
-            <button
-              disabled={loading}
-              type="submit"
-              className="w-full block bg-indigo-500 hover:bg-indigo-400 focus:bg-indigo-400 text-white font-semibold rounded-lg
-            px-4 py-3 mt-6"
-            >
-              {loading ? "Loading..." : "Sign In"}
-            </button>
-          </form>
-          <hr className="my-6 border-gray-300 w-full" />
-          <OAuth />
-          <p className="text-red-700 mt-5">
-            {error ? error.message || "Something went wrong!" : ""}
-          </p>
-          <p className="mt-8">
-            Don't have an account yet?{" "}
-            <Link
-              to="/sign-up"
-              className="text-blue-500 hover:text-blue-700 font-semibold"
-            >
-              Sign Up
-            </Link>{" "}
-            Here
-          </p>
+            {errorMessage && (
+              <Alert className="mt-5" color="failure">
+                {errorMessage}
+              </Alert>
+            )}
+          </div>
         </div>
       </div>
     </section>
