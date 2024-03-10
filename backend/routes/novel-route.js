@@ -1,18 +1,21 @@
 import express from "express";
+import { verifyToken } from "../utils/verifyUser.js";
 import {
   createNovel,
   deleteNovel,
+  getAllNovels,
   getNovelById,
-  getNovels,
+  getUserNovels,
   updateNovel,
 } from "../controllers/novel-controller.js";
 
 const router = express.Router();
-
-router.get("/", getNovels);
-router.get("/:id", getNovelById);
-router.post("/", createNovel);
-router.put("/:id", updateNovel);
-router.delete("/:id", deleteNovel);
+// Routes for novels
+router.get("/", getAllNovels);
+router.get("/getnovels",verifyToken, getUserNovels);
+router.get("/:novelId", getNovelById);
+router.post("/create", verifyToken, createNovel);
+router.put("/update/:novelId", verifyToken, updateNovel);
+router.delete("/delete/:novelId", verifyToken, deleteNovel);
 
 export default router;
