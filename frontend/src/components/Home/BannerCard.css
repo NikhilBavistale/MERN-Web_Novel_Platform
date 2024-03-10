@@ -1,3 +1,8 @@
+.banner {
+    width: 100%;
+    height: auto;
+}
+
 .banner .swiper {
     width: 240px;
     height: 320px;
@@ -17,7 +22,6 @@
 
 .banner .swiper-slide:nth-child(1n) {
     background-image: url(../../assets/banner-novels/Book1.jpg);
-    
 }
 
 .banner .swiper-slide:nth-child(2n) {
@@ -26,15 +30,48 @@
 
 .banner .swiper-slide:nth-child(3n) {
     background-image: url(../../assets/banner-novels/Book3.jpg);
-
 }
 
 .banner .swiper-slide:nth-child(4n) {
     background-image: url(../../assets/banner-novels/Book4.jpg);
-
 }
 
 .banner .swiper-slide:nth-child(5n) {
     background-image: url(../../assets/banner-novels/Book5.jpg);
+}
 
+/* Responsive styles */
+@media (min-width: 768px) {
+    .banner .swiper {
+        width: 480px;
+        height: 640px;
+    }
+
+    .banner .swiper-slide {
+        font-size: 28px;
+    }
+}
+
+/* Responsive styles for large devices */
+@media (min-width: 1024px) {
+    .banner .swiper {
+        width: 360px;
+        height: 480px;
+    }
+
+    .banner .swiper-slide {
+        font-size: 24px;
+    }
+}
+
+/* Responsive styles for small devices */
+@media (max-width: 600px) {
+    .banner .swiper {
+        width: 180px;
+        height: 240px;
+    }
+
+    .banner .swiper-slide {
+        font-size: 18px;
+    }
 }

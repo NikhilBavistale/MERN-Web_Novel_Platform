@@ -1,20 +1,30 @@
-import React, { useEffect, useState } from 'react'
-import NovelCards from './NovelCards'
+import React, { useEffect, useState } from "react";
+import NovelCards from "./NovelCards";
 
 const OtherNovels = () => {
-    const [novels, setNovels] = useState([]);
+  const [userNovels, setUserNovels] = useState([]);
 
-    useEffect(() => {
-      fetch("api/novels/")
-        .then((res) => res.json())
-        .then((data) => setNovels(data.slice(5, 12)));
-    }, []);
   
-    return (
-      <div>
-        <NovelCards novels={novels} headline="Other Novels" />
-      </div>
-    );
-}
+  useEffect(() => {
+    const fetchAllNovels = async () => {
+      try {
+        const res = await fetch(`/api/novels`);
+        const data = await res.json();
+        if (res.ok) {
+          setUserNovels(data);
+        }
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+    fetchAllNovels();
+  }, []);
 
-export default OtherNovels
+  return (
+    <div className="bg-earth-yellow">
+      <NovelCards novels={userNovels.slice(9,19)} headline="Other Novels" />
+    </div>
+  );
+};
+
+export default OtherNovels;

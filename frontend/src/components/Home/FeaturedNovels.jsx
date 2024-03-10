@@ -1,17 +1,26 @@
 import React, { useEffect, useState } from "react";
 import NovelCards from "./NovelCards";
 const FeaturedNovels = () => {
-  const [novels, setNovels] = useState([]);
+  const [userNovels, setUserNovels] = useState([]);
 
   useEffect(() => {
-    fetch("api/novels/")
-      .then((res) => res.json())
-      .then((data) => setNovels(data.slice(0, 10)));
+    const fetchAllNovels = async () => {
+      try {
+        const res = await fetch(`/api/novels`);
+        const data = await res.json();
+        if (res.ok) {
+          setUserNovels(data);
+        }
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+    fetchAllNovels();
   }, []);
 
   return (
-    <div>
-      <NovelCards novels={novels} headline="Featured Novels" />
+    <div className="bg-mindaro p-4 md:p-8">
+      <NovelCards novels={userNovels.slice(0,8)} headline="Featured Novels" />
     </div>
   );
 };
