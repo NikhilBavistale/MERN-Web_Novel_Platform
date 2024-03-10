@@ -14,7 +14,9 @@ const About = () => {
   return (
     <div className="bg-gray-100 px-4 lg:px-24 min-h-screen">
       <header className="bg-blue-500 text-white py-8 px-4">
-        <h1 className="text-4xl font-bold text-center">Mystic Codex</h1>
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center">
+          Mystic Codex
+        </h1>
         <p className="text-lg text-center">
           Explore a Digital Oasis for Storytellers and Readers
         </p>
@@ -38,7 +40,7 @@ const About = () => {
       </section>
 
       {/* Purpose and Goals */}
-      <section className="py-12 bg-white">
+      <section className="py-12 px-4 bg-white">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-6 text-gray-800">
             Purpose and Goals
@@ -83,15 +85,15 @@ const About = () => {
           </p>
         </div>
       </section>
-
-      <section className="py-12 bg-gray-200">
+      {/* Offerings */}
+      <section className="py-12 px-2 bg-gray-200">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-6 text-gray-800">Offerings</h2>
-          <p>
+          <p className="text-gray-700">
             Mystic Codex offers a comprehensive suite of features designed to
             cater to the needs of both authors and avid readers.
           </p>
-          <ul>
+          <ul className="list-disc pl-6 mt-4 text-gray-700">
             <li>
               Creation Tools: Equipped with intuitive writing tools, authors can
               unleash their imagination and craft captivating stories
@@ -133,7 +135,7 @@ const About = () => {
             Don't just take our word for it—here's what some of our valued users
             have to say about their experience with Mystic Codex:
           </p>
-          <blockquote>
+          <blockquote className="italic text-gray-700">
             <p>
               "Mystic Codex has truly become my sanctuary for inspiration. The
               platform's vast selection of stories and the ability to connect
@@ -151,17 +153,17 @@ const About = () => {
       </section>
 
       {/* Achievements */}
-      <section className="py-12 bg-white">
+      <section className="py-12 px-2 bg-white">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-6 text-gray-800">
             Achievements
           </h2>
           {/* Add Achievements content here */}
-          <p>
+          <p className="text-gray-700">
             Mystic Codex takes immense pride in the accomplishments we've
             achieved since our inception. Some notable achievements include:
           </p>
-          <ul>
+          <ul className="list-disc pl-6 mt-4 text-gray-700">
             <li>
               Hosting thousands of captivating stories from talented authors
               worldwide.
