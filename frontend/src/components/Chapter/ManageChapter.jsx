@@ -87,12 +87,12 @@ export default function ManageChapter() {
           <div className="flex items-center">
             <FaInfoCircle className="mr-2" />
             Status:{" "}
-            {novel.completed !== undefined ? (
-              <span
-                className={novel.completed ? "text-green-500" : "text-red-500"}
-              >
-                {novel.completed ? "Completed" : "Ongoing"}
-              </span>
+            {novel.status === "completed" ? (
+              <span className="text-red-500">Completed</span>
+            ) : novel.status === "paused" ? (
+              <span className="text-yellow-500">Paused</span>
+            ) : novel.status === "ongoing" ? (
+              <span className="text-green-500">Ongoing</span>
             ) : (
               "Unknown"
             )}

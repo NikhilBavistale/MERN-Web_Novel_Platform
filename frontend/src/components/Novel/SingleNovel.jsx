@@ -21,24 +21,24 @@ export default function SingleNovel() {
       try {
         setLoading(true);
         setError(null);
-  
+
         const res = await fetch(`/api/novels/${novelId}`);
         if (!res.ok) {
-          throw new Error('Error occurred while fetching novel');
+          throw new Error("Error occurred while fetching novel");
         }
         const data = await res.json();
         setNovel(data);
-  
+
         const recentNovelsRes = await fetch(`/api/novels?limit=5`);
         if (!recentNovelsRes.ok) {
-          throw new Error('Error occurred while fetching recent novels');
+          throw new Error("Error occurred while fetching recent novels");
         }
         const recentNovelsData = await recentNovelsRes.json();
         setRecentNovels(recentNovelsData);
-  
+
         const chapterRes = await fetch(`/api/novels/${novelId}/chapters`);
         if (!chapterRes.ok) {
-          throw new Error('Error occurred while fetching chapters');
+          throw new Error("Error occurred while fetching chapters");
         }
         const chapterData = await chapterRes.json();
         setChapters(chapterData);
@@ -95,12 +95,12 @@ export default function SingleNovel() {
           <div className="flex items-center">
             <FaInfoCircle className="mr-2" />
             Status:{" "}
-            {novel.completed !== undefined ? (
-              <span
-                className={novel.completed ? "text-green-500" : "text-red-500"}
-              >
-                {novel.completed ? "Completed" : "Ongoing"}
-              </span>
+            {novel.status === "completed" ? (
+              <span className="text-red-500">Completed</span>
+            ) : novel.status === "paused" ? (
+              <span className="text-yellow-500">Paused</span>
+            ) : novel.status === "ongoing" ? (
+              <span className="text-green-500">Ongoing</span>
             ) : (
               "Unknown"
             )}

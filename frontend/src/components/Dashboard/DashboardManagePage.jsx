@@ -44,15 +44,30 @@ const DashboardManagePage = () => {
     fetchChapters(novel._id);
     setLoading(true);
   };
+
   const handleStatusChange = async (novelId, status) => {
-    const completed = status === "completed";
+    let newStatus;
+    switch (status) {
+      case "ongoing":
+        newStatus = "completed";
+        break;
+      case "completed":
+        newStatus = "paused";
+        break;
+      case "paused":
+        newStatus = "ongoing";
+        break;
+      default:
+        newStatus = "ongoing";
+    }
+
     try {
       const response = await fetch(`/api/novels/update/${novelId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ completed }),
+        body: JSON.stringify({ status: newStatus }),
       });
       const data = await response.json();
       if (!response.ok) {
@@ -61,7 +76,7 @@ const DashboardManagePage = () => {
         // Update the status in the local state
         setNovels(
           novels.map((novel) =>
-            novel._id === novelId ? { ...novel, completed } : novel
+            novel._id === novelId ? { ...novel, status: newStatus } : novel
           )
         );
       }
@@ -93,7 +108,7 @@ const DashboardManagePage = () => {
             >
               {novel.title}
             </h3>
-            
+
             <Link
               onClick={(e) => {
                 e.preventDefault();
@@ -101,15 +116,18 @@ const DashboardManagePage = () => {
                   "Are you sure you want to change the status?"
                 );
                 if (confirmChange) {
-                  handleStatusChange(
-                    novel._id,
-                    novel.completed ? "in-progress" : "completed"
-                  );
+                  handleStatusChange(novel._id, novel.status);
                 }
               }}
-              className={novel.completed ? "text-green-500" : "text-red-500 cursor-pointer"}
+              className={`cursor-pointer ${
+                novel.status === "completed"
+                  ? "text-red-500 hover:text-red-700"
+                  : novel.status === "paused"
+                  ? "text-yellow-500 hover:text-yellow-700"
+                  : "text-green-500 hover:text-green-700"
+              }`}
             >
-              {novel.completed ? "Completed" : "Ongoing"}
+              {novel.status.charAt(0).toUpperCase() + novel.status.slice(1)}
             </Link>
           </div>
         ))}

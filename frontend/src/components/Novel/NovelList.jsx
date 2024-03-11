@@ -70,10 +70,10 @@ const NovelList = () => {
     currentPage * itemsPerPage
   );
   return (
-    <div className="mt-28 px-4 lg:px-24">
+    <div className="mt-5 px-4 lg:px-24">
       <h2 className="text-5xl font-bold text-center">All Novels are here</h2>
-      <div className="flex justify-between items-center my-8">
-        <div>
+      <div className="flex flex-col md:flex-row justify-between items-center my-8">
+        <div className="mb-4 md:mb-0">
           <Label>Search By:</Label>
           <TextInput
             type="text"
@@ -82,7 +82,7 @@ const NovelList = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <div>
+        <div className="mb-4 md:mb-0">
           <Label>Sort By:</Label>
           <Select
             value={sortType}
@@ -106,10 +106,11 @@ const NovelList = () => {
             <option value="all">All</option>
             <option value="completed">Completed</option>
             <option value="ongoing">Ongoing</option>
+            <option value="paused">Paused</option>
           </Select>
         </div>
       </div>
-      <div className="grid gap-8 my-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid gap-8 my-8 grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {filteredNovels.length > 0 ? (
           novelsForCurrentPage.map((novel, index) => (
             <Card key={index} className="flex flex-col h-full">
@@ -121,7 +122,7 @@ const NovelList = () => {
                 />
               </div>
               {/* Content */}
-              <div className="flex-grow flex flex-col justify-between p-4">
+              <div className="flex-grow flex flex-col gap-1 justify-between p-1">
                 <div>
                   <h5 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
                     {novel.title.length > 10
@@ -151,13 +152,23 @@ const NovelList = () => {
           <p>No results found</p>
         )}
       </div>
-      <div className="flex overflow-x-auto sm:justify-center">
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={(page) => setCurrentPage(page)}
-          showIcons
-        />
+      <div className="flex justify-center mt-4 ">
+        {window.innerWidth < 1024 ? (
+          <Pagination
+            layout="table"
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={(page) => setCurrentPage(page)}
+            showIcons
+          />
+        ) : (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={(page) => setCurrentPage(page)}
+            showIcons
+          />
+        )}
       </div>
     </div>
   );
