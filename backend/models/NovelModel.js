@@ -31,9 +31,10 @@ const novelSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    completed: {
-      type: Boolean,
-      default: false,
+    status: {
+      type: String,
+      enum: ["ongoing", "completed", "paused"],
+      default: "ongoing", 
     },
     ratings: {
       type: Number,
