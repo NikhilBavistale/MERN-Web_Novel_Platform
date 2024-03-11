@@ -1,11 +1,12 @@
 import { Button, Spinner } from "flowbite-react";
 import React, { useEffect, useState } from "react";
-import { FaInfoCircle } from "react-icons/fa";
-import { FaFileLines, FaStar, FaTags, FaUser } from "react-icons/fa6";
+import { FaFileLines } from "react-icons/fa6";
+import { FaInfoCircle, FaStar, FaTags, FaUser } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
+import TimeDifference from "../TimeDifference";
 
 export default function ManageChapter() {
-  const { novelId, chapterId } = useParams();
+  const { novelId } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -62,7 +63,7 @@ export default function ManageChapter() {
   return (
     <main className="p-3 flex flex-col max-w-6xl mx-auto min-h-screen">
       <h1 className="text-3xl mt-10 p-3 text-center font-serif max-w-2xl mx-auto lg:text-4xl">
-        {novel && novel.title}
+        Manage Chapters
       </h1>
       <div className="flex flex-col lg:flex-row gap-10 items-center">
         <img
@@ -71,6 +72,9 @@ export default function ManageChapter() {
           className="rounded-md w-full lg:w-64 h-auto object-cover"
         />
         <div className="flex flex-col text-lg md:text-2xl text-gray-600 mt-3 ml-5">
+          <h1 className="text-4xl mt-6 text-center font-serif max-w-3xl mx-auto lg:text-5xl">
+            {novel && novel.title}
+          </h1>
           <div className="flex items-center">
             <FaUser className="mr-2" />
             Author: {novel.authorName}
@@ -112,7 +116,6 @@ export default function ManageChapter() {
 
           <div className="flex flex-row gap-10 m-3">
             <Button
-              // onClick={() => navigate(`/novels/${novel._id}/chapters`)}
               onClick={() => navigate(`/create-chapter/${novel._id}`)}
               gradientDuoTone="purpleToPink"
             >
@@ -121,41 +124,55 @@ export default function ManageChapter() {
           </div>
         </div>
       </div>
-
       <div className="mt-5">
         <h2 className="text-2xl font-serif">Chapter List</h2>
-        <ul className="text-lg lg:text-3xl text-gray-600 mt-3 ml-5">
-          {chapters &&
-            chapters.slice(0, displayCount).map((chapter, index) => (
-              <li
-                key={chapter._id}
-                className="flex justify-between items-center p-3 border-b-2 border-gray-200 transition-all hover:bg-gray-100"
-              >
-                <p className="text-lg font-bold">{index + 1}</p>
-                <p className="text-lg font-medium">{chapter.title}</p>
-                <Button
-                  onClick={() =>
-                    navigate(`/update-chapter/${novel._id}/${chapter._id}`)
-                  }
-                  gradientDuoTone="purpleToPink"
-                  className="text-white"
-                >
-                  Update
-                </Button>
-              </li>
-            ))}
-        </ul>
-        {displayCount < chapters.length ? (
-          <Button
-            onClick={() => setDisplayCount(displayCount + 5)}
-            gradientDuoTone="purpleToPink"
-            className="text-white mt-3"
-          >
-            Show More
-          </Button>
-        ) : (
-          <p className="text-lg text-gray-600 mt-3">End of list</p>
-        )}
+        <div className="text-lg lg:text-3xl text-gray-600 mt-3 mx-1">
+          {chapters && chapters.length > 0 ? (
+            <ol className="text-lg text-justify text-gray-500 dark:text-gray-400 grid grid-cols-1 md:grid-cols-2 gap-4">
+              {chapters.slice(0, displayCount).map((chapter) => (
+                <li key={chapter._id} className="mb-4">
+                  <a
+                    href={`/update-chapter/${novel._id}/${chapter._id}`}
+                    title={chapter.title}
+                    className="block p-4 bg-gray-100 rounded-md"
+                  >
+                    <div className="flex items-center mb-2">
+                      <span className="text-lg font-bold mr-2">
+                        {chapter.number}
+                      </span>
+                      <div>
+                        <h3 className="text-lg font-semibold">
+                          {chapter.title}
+                        </h3>
+                        <p className="text-sm text-gray-600">
+                          <TimeDifference startDate={chapter.createdAt} />
+                        </p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <p className="text-lg text-gray-500 dark:text-gray-400">
+              No chapter yet
+            </p>
+          )}
+        </div>
+
+        <div className="mt-3 ml-5">
+          {displayCount < chapters.length ? (
+            <Button
+              onClick={() => setDisplayCount(displayCount + 5)}
+              gradientDuoTone="purpleToPink"
+              className="text-white"
+            >
+              Show More
+            </Button>
+          ) : (
+            <p className="text-lg text-gray-600">End of list</p>
+          )}
+        </div>
       </div>
     </main>
   );
