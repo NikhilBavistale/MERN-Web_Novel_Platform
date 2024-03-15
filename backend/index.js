@@ -6,7 +6,6 @@ import authRoutes from "./routes/auth-route.js";
 import novelRoutes from "./routes/novel-route.js";
 import chapterRoutes from "./routes/chapter-route.js";
 import genreRoutes from "./routes/genre-route.js";
-import searchRoutes from "./routes/search-route.js"
 import commentRoutes from "./routes/comment-route.js";
 import cookieParser from "cookie-parser";
 import path from "path";
@@ -51,7 +50,6 @@ app.use("/api/novels", novelRoutes);
 app.use("/api/novels", chapterRoutes);
 app.use('/api/comments', commentRoutes);
 app.use("/api/genres", genreRoutes);
-app.use('/api/search', searchRoutes);
 // Then use the catch-all route handler
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "frontend", "dist", "index.html"));
