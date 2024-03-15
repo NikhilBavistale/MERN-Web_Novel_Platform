@@ -20,6 +20,17 @@ export default {
       mindaro: "#FCFDAF",
       flax: "#EFD780",
       "earth-yellow": "#DBA159",
+      // Chapter Background
+      "Light-blue" : "#E9EBEE",       
+      "Light-gray" : "#F4F4F4",       
+      "Light-screen" : "#F4F4E4",       
+      "Dark-blue" : "#D5D8DC",       
+      "Dark-yellow" : "#FAFAC8",       
+      "Wood-grain" : "#EFEFAB",       
+      Sepia : "#EAE4D3",       
+      White : "#FFF",     
+      Dark : "#232323",      
+    
     },
   },
   plugins: [require("flowbite/plugin"), require("tailwind-scrollbar")],
