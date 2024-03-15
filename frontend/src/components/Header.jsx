@@ -40,7 +40,8 @@ export default function Header() {
   };
 
   return (
-    <Navbar className="bg-nyanza border-b-2 sticky top-0 z-50">
+    
+    <Navbar className="bg-nyanza border-b-2 sticky top-0 left-0 z-50">
       <Link
         to="/"
         className="self-center whitespace-nowrap text-sm sm:text-xl font-semibold dark:text-white"
