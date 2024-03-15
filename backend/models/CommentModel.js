@@ -1,7 +1,6 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+import mongoose from "mongoose";
 
-const commentSchema = new Schema(
+const commentSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -16,10 +15,9 @@ const commentSchema = new Schema(
     chapterId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Chapter",
-      required: true,
     },
     parent: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "Comment",
     },
     content: {
@@ -27,22 +25,8 @@ const commentSchema = new Schema(
       required: true,
     },
     upvote: {
-      type: [
-        {
-          type: Schema.Types.ObjectId,
-          ref: "User",
-        },
-      ],
-      default: [],
-    },
-    downvote: {
-      type: [
-        {
-          type: Schema.Types.ObjectId,
-          ref: "User",
-        },
-      ],
-      default: [],
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "User",
     },
     likes: {
       type: Number,
@@ -52,9 +36,14 @@ const commentSchema = new Schema(
       type: Number,
       default: 0,
     },
+    targetType: {
+      type: String,
+      enum: ["novel", "chapter"],
+      required: true,
+    },
   },
   { timestamps: true }
 );
 
 const Comment = mongoose.model("Comment", commentSchema);
-module.exports = Comment;
+export default Comment;

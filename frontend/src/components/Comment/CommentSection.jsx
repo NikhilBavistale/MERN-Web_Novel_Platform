@@ -5,56 +5,127 @@ import { Link, useNavigate } from "react-router-dom";
 import Comment from "./Comment";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 
-export default function CommentSection({ chapterId }) {
+export default function CommentSection({ chapterId, novelId }) {
   const { currentUser } = useSelector((state) => state.user);
   const [comment, setComment] = useState("");
   const [commentError, setCommentError] = useState(null);
   const [comments, setComments] = useState([]);
+  const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [commentToDelete, setCommentToDelete] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        let res;
+        if (chapterId) {
+          res = await fetch(`/api/comments/chapter/${chapterId}`);
+        } else {
+          if (!novelId) {
+            return;
+          }
+          res = await fetch(`/api/comments/novel/${novelId}`);
+        }
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.message || "Something went wrong");
+        }
+        setComments(data);
+      } catch (error) {
+        setError(error.message);
+        console.error("Error fetching comments:", error);
+      }
+    };
+    fetchComments();
+  }, [chapterId, novelId]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (comment.length > 200) {
+    if (!currentUser) {
+      navigate('/sign-in');
       return;
     }
+    if (comment.length > 200) {
+          setCommentError("Comment cannot be more than 200 characters");
+          return;
+        }
     try {
-      const res = await fetch("/api/comment/create", {
-        method: "POST",
+      const res = await fetch('/api/comments', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          content: comment,
-          chapterId,
-          userId: currentUser._id,
+          targetType: chapterId ? 'chapter' : 'novel',
+          novelId: novelId,
+          chapterId: chapterId,
+          content: comment
         }),
       });
       const data = await res.json();
-      if (res.ok) {
-        setComment("");
-        setCommentError(null);
-        setComments([data, ...comments]);
+      if (!res.ok) {
+        throw new Error(data.message || 'Something went wrong');
       }
+      setComment('');
+      setCommentError(null);
+      setComments([ ...comments, data.comment]);
     } catch (error) {
-      setCommentError(error.message);
+      console.error('Error submitting comment:', error);
+      setCommentError(error.message || 'Failed to submit comment');
     }
   };
+  
 
-  useEffect(() => {
-    const getComments = async () => {
-      try {
-        const res = await fetch(`/api/comment/getChapterComments/${chapterId}`);
-        if (res.ok) {
-          const data = await res.json();
-          setComments(data);
-        }
-      } catch (error) {
-        console.log(error.message);
-      }
-    };
-    getComments();
-  }, [chapterId]);
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   if (comment.length > 200) {
+  //     setCommentError("Comment cannot be more than 200 characters");
+  //     return;
+  //   }
+  //   try {
+  //     const requestBody = {
+  //       content: comment,
+  //       novelId,
+  //       userId: currentUser._id,
+  //       targetType: chapterId ? "chapter" : "novel",
+  //     };
+  //     if (chapterId) {
+  //       requestBody.chapterId = chapterId;
+  //     }
+  //     const res = await fetch("/api/comments", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(requestBody),
+  //     });
+  //     const data = await res.json();
+  //     if (!res.ok) {
+  //       throw new Error(data.message || "Something went wrong");
+  //     }
+  //     if (res.ok) {
+  //       setComment("");
+  //       setCommentError(null);
+  //       // const newComment = {
+  //       //   ...data,
+  //       //   user: {
+  //       //     _id: currentUser._id,
+  //       //     username: currentUser.username,
+  //       //     profilePicture: currentUser.profilePicture,
+  //       //   },
+  //       // };
+  //       // if (!newComment._id) {
+  //       //   throw new Error("New comment does not have a valid identifier (_id)");
+  //       // }
+  //       // setComments([...comments, newComment]);
+  //       setComments([...comments, data]);
+  //     }
+  //   } catch (error) {
+  //     setError(error.message);
+  //   }
+  // };
 
   const handleLike = async (commentId) => {
     try {
@@ -62,11 +133,24 @@ export default function CommentSection({ chapterId }) {
         navigate("/sign-in");
         return;
       }
-      const res = await fetch(`/api/comment/likeComment/${commentId}`, {
+      const commentToLike = comments.find(
+        (comment) => comment._id === commentId
+      );
+      const updatedLikes = [...commentToLike.likes, currentUser._id];
+      const res = await fetch(`/api/comments/${commentId}`, {
         method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          likes: updatedLikes,
+        }),
       });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || "Something went wrong");
+      }
       if (res.ok) {
-        const data = await res.json();
         setComments(
           comments.map((comment) =>
             comment._id === commentId
@@ -83,15 +167,32 @@ export default function CommentSection({ chapterId }) {
       console.log(error.message);
     }
   };
-
   const handleEdit = async (comment, editedContent) => {
-    setComments(
-      comments.map((c) =>
-        c._id === comment._id ? { ...c, content: editedContent } : c
-      )
-    );
+    try {
+      const res = await fetch(`/api/comments/${comment._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content: editedContent,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || "Something went wrong");
+      }
+      if (res.ok) {
+        setComments(
+          comments.map((c) =>
+            c._id === comment._id ? { ...c, content: data.content } : c
+          )
+        );
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
   };
-
   const handleDelete = async (commentId) => {
     setShowModal(false);
     try {
@@ -99,17 +200,27 @@ export default function CommentSection({ chapterId }) {
         navigate("/sign-in");
         return;
       }
-      const res = await fetch(`/api/comment/deleteComment/${commentId}`, {
+      const res = await fetch(`/api/comments/${commentId}`, {
         method: "DELETE",
       });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || "Something went wrong");
+      }
       if (res.ok) {
-        const data = await res.json();
         setComments(comments.filter((comment) => comment._id !== commentId));
       }
     } catch (error) {
       console.log(error.message);
     }
   };
+  if (error) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <p>Error occurred while fetching data: {error.message}</p>
+      </div>
+    );
+  }
   return (
     <div className="max-w-2xl mx-auto w-full p-3">
       {currentUser ? (
@@ -162,6 +273,7 @@ export default function CommentSection({ chapterId }) {
           )}
         </form>
       )}
+
       {comments.length === 0 ? (
         <p className="text-sm my-5">No comments yet!</p>
       ) : (
@@ -172,7 +284,7 @@ export default function CommentSection({ chapterId }) {
               <p>{comments.length}</p>
             </div>
           </div>
-          {comments.map((comment) => (
+          {[...comments].reverse().map((comment) => (
             <Comment
               key={comment._id}
               comment={comment}
