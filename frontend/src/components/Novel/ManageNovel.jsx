@@ -14,14 +14,12 @@ const getNovelsUrl = (isAdmin, userId, startIndex) => {
 const ManageNovel = () => {
   const { currentUser } = useSelector((state) => state.user);
   const [userNovels, setUserNovels] = useState([]);
-  const [showMore, setShowMore] = useState(true);
+  const [displayCount, setDisplayCount] = useState(5);
   const [showModal, setShowModal] = useState(false);
   const [novelIdToDelete, setNovelIdToDelete] = useState("");
   const [publishError, setPublishError] = useState(null);
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
   useEffect(() => {
     const fetchAllNovels = async () => {
       setLoading(true);
@@ -39,7 +37,7 @@ const ManageNovel = () => {
         if (res.ok) {
           setPublishError(null);
           setUserNovels(data);
-          if ((data.novels || []).length < 9) {
+          if (data.length < 9) {
             setShowMore(false);
           }
         }
@@ -53,26 +51,6 @@ const ManageNovel = () => {
     fetchAllNovels();
   }, [currentUser._id, currentUser.isAdmin]);
 
-  const handleShowMore = async () => {
-    const startIndex = userNovels.length;
-    try {
-      const res = await fetch(
-        currentUser.isAdmin
-          ? `/api/novels?startIndex=${startIndex}`
-          : `/api/novels/getnovels?userId=${currentUser._id}&startIndex=${startIndex}`
-      );
-      const data = await res.json();
-      if (res.ok) {
-        setUserNovels((prev) => [...prev, ...(data.novels || [])]);
-        if ((data.novels || []).length < 2) {   // Change 2 to 9
-          setShowMore(false);
-        }
-      }
-    } catch (error) {
-      console.log(error.message);
-      setError(error.message);
-    }
-  };
   //delete novel
   const handleDelete = async () => {
     setShowModal(false);
@@ -109,84 +87,100 @@ const ManageNovel = () => {
   }
   return (
     <div className="table-auto overflow-x-scroll md:overflow-auto md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500">
-    {userNovels && userNovels.length > 0 ? (
-      <>
-        <h2 className="mb-8 text-lg sm:text-xl md:text-2xl font-bold">Manage Your Novel</h2>
-        <div className="overflow-x-auto md:overflow-visible">
-          <Table hoverable className="shadow-md">
-            <Table.Head>
-              <Table.HeadCell>No.</Table.HeadCell>
-              <Table.HeadCell>Novel Name</Table.HeadCell>
-              <Table.HeadCell>Author Name</Table.HeadCell>
-              <Table.HeadCell>Genre</Table.HeadCell>
-              <Table.HeadCell>Delete Novel</Table.HeadCell>
-              <Table.HeadCell>Edit Novel</Table.HeadCell>
-            </Table.Head>
+      {userNovels && userNovels.length ? (
+        <>
+          <h2 className="mb-8 text-lg sm:text-xl md:text-2xl font-bold">
+            Manage Your Novel
+          </h2>
+          <div className="overflow-x-auto md:overflow-visible">
+            <Table hoverable className="shadow-md min-w-full">
+              <Table.Head>
+                <Table.HeadCell>No.</Table.HeadCell>
+                <Table.HeadCell>Novel Name</Table.HeadCell>
+                <Table.HeadCell>Author Name</Table.HeadCell>
+                <Table.HeadCell>Genre</Table.HeadCell>
+                <Table.HeadCell>Delete Novel</Table.HeadCell>
+                <Table.HeadCell>Edit Novel</Table.HeadCell>
+              </Table.Head>
 
-            {userNovels.map((novel, index) => (
-              <Table.Body className="divide-y" key={novel._id}>
-                <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                  <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                    {index + 1}
-                  </Table.Cell>
-                  <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                    <Link to={`/novels/${novel._id}/manage`}>
-                      {novel.title}
-                    </Link>
-                  </Table.Cell>
-                  <Table.Cell>{novel.authorName}</Table.Cell>
-                  <Table.Cell>
-                    {novel.genres.map((genre) => genre.name).join(", ") ||
-                      "Unknown"}
-                  </Table.Cell>
-                  <Table.Cell>
-                    <span
-                      onClick={() => {
-                        setShowModal(true);
-                        setNovelIdToDelete(novel._id);
-                      }}
-                      className="font-medium text-red-500 hover:underline cursor-pointer"
-                    >
-                      Delete
-                    </span>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <Link
-                      className="text-teal-500 hover:underline"
-                      to={`/update-novel/${novel._id}`}
-                    >
-                      <span>Edit</span>
-                    </Link>
-                  </Table.Cell>
-                </Table.Row>
-              </Table.Body>
-            ))}
-          </Table>
+              {userNovels.slice(0, displayCount).map((novel, index) => (
+                <Table.Body className="divide-y" key={novel._id}>
+                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                    <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                      {index + 1}
+                    </Table.Cell>
+                    <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                      <Link to={`/novels/${novel._id}/manage`}>
+                        {novel.title}
+                      </Link>
+                    </Table.Cell>
+                    <Table.Cell>{novel.authorName}</Table.Cell>
+                    <Table.Cell>
+                      {novel.genres.join(", ") || "Unknown"}
+                    </Table.Cell>
+                    <Table.Cell>
+                      <span
+                        onClick={() => {
+                          setShowModal(true);
+                          setNovelIdToDelete(novel._id);
+                        }}
+                        className="font-medium text-red-500 hover:underline cursor-pointer"
+                      >
+                        Delete
+                      </span>
+                    </Table.Cell>
+                    <Table.Cell>
+                      <Link
+                        className="text-teal-500 hover:underline"
+                        to={`/update-novel/${novel._id}`}
+                      >
+                        <span>Edit</span>
+                      </Link>
+                    </Table.Cell>
+                  </Table.Row>
+                </Table.Body>
+              ))}
+            </Table>
           </div>
 
-          {showMore && (
-          <button
-            onClick={handleShowMore}
-            className="w-full text-teal-500 self-center text-sm py-7"
-          >
-            Show more
-          </button>
-        )}
-      </>
+          <div className="flex justify-center mt-2 gap-4 md:gap-8">
+            {displayCount < userNovels.length && (
+              <Button
+                onClick={() => setDisplayCount(displayCount + 5)}
+                gradientDuoTone="purpleToPink"
+                className="text-white"
+              >
+                Show More
+              </Button>
+            )}
+            {displayCount > 5 && (
+              <Button
+                onClick={() => setDisplayCount(Math.max(displayCount - 5, 5))}
+                gradientDuoTone="purpleToPink"
+                className="text-white"
+              >
+                Show Less
+              </Button>
+            )}
+          </div>
+        </>
       ) : (
-        <p className="text-lg sm:text-xl md:text-2xl">You have no novels yet!</p>
-        )}
-        {publishError && (
-            <Alert className="mt-5" color="failure">
-              {publishError}
-            </Alert>
-          )}
-        <Modal
-          show={showModal}
-          onClose={() => setShowModal(false)}
-          popup
-          size="md"
-        >
+        <p className="text-lg text-red-400 sm:text-xl md:text-2xl">
+          You have no novels yet!
+        </p>
+      )}
+
+      {publishError && (
+        <Alert className="mt-5" color="failure">
+          {publishError}
+        </Alert>
+      )}
+      <Modal
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        popup
+        size="md"
+      >
         <Modal.Header />
         <Modal.Body>
           <div className="text-center">
