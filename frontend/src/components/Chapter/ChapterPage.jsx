@@ -1,17 +1,32 @@
-import { Button, Pagination, Select, Spinner } from "flowbite-react";
+import { Button, Label, Pagination, Select, Spinner } from "flowbite-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import CommentSection from "../Comment/CommentSection";
-import DisplayOptions from "../DispalyOptions";
+// import DisplayOptions from "../DispalyOptions";
 
 export default function ChapterPage() {
   const { chapterId, novelId } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [novelTitle, setNovelTitle] = useState(null);
   const [chapter, setChapter] = useState(null);
   const [chapters, setChapters] = useState(null);
+  const [fontSize, setFontSize] = useState("text-base");
+  const [fontFamily, setFontFamily] = useState("font-sans");
+  const [background, setBackground] = useState("bg-White");
+  const [showDisplayOptions, setShowDisplayOptions] = useState(false);
 
+  const handleFontSizeChange = (event) => {
+    setFontSize(event.target.value);
+  };
+  const handleFontFamilyChange = (event) => {
+    setFontFamily(event.target.value);
+  };
+  const handleThemeChange = (event) => {
+    setBackground(event.target.value);
+  };
+  //Fetch chapters
   useEffect(() => {
     const fetchChapter = async () => {
       try {
@@ -35,7 +50,7 @@ export default function ChapterPage() {
     };
     fetchChapter();
   }, [novelId, chapterId]);
-
+  //Fetch recent chapters
   useEffect(() => {
     const fetchRecentChapters = async () => {
       try {
@@ -59,11 +74,25 @@ export default function ChapterPage() {
     };
     fetchRecentChapters();
   }, [novelId]);
-
+  const fetchNovelTitle = async (novelId) => {
+    try {
+      const response = await fetch(`/api/novels/${novelId}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch novel");
+      }
+      const novel = await response.json();
+      console.log(novel.title);
+      return novel.title;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  };
   useEffect(() => {
     if (chapters) {
       const currentChapter = chapters.find((chap) => chap._id === chapterId);
       setChapter(currentChapter);
+      fetchNovelTitle(novelId).then(setNovelTitle);
     }
   }, [chapters, chapterId]);
 
@@ -82,11 +111,72 @@ export default function ChapterPage() {
       </div>
     );
   return (
-    <div className="flex flex-col">
-      <DisplayOptions className="z-10" />
-      <div className="flex flex-col items-center">
+    <div className={`flex flex-col m-1 ${background}`}>
+      <div className="flex flex-col m-1 items-center">
+        <Button
+          onClick={() => setShowDisplayOptions(!showDisplayOptions)}
+          gradientDuoTone={showDisplayOptions ? "purpleToPink" : "purpleToBlue"}
+        >
+          Display Options
+        </Button>
+        {showDisplayOptions && (
+          <div className="display-options m-1 p-4 bg-white shadow-md rounded-md">
+            <h2 className="flex flex-row text-2xl font-bold mb-4">
+              Display Options
+            </h2>
+            <div className="p-3">
+              <Label htmlFor="font-size" className="mr-2">
+                Font size:
+              </Label>
+              <Select
+                id="font-size"
+                value={fontSize}
+                onChange={handleFontSizeChange}
+              >
+                <option value="text-sm">Small</option>
+                <option value="text-base">Normal</option>
+                <option value="text-lg">Large</option>
+                <option value="text-xl">Extra Large</option>
+              </Select>
+            </div>
+            <div className="p-3">
+              <Label htmlFor="font-family" className="mr-2 ">
+                Font Family:
+              </Label>
+              <Select
+                id="font-family"
+                value={fontFamily}
+                onChange={handleFontFamilyChange}
+              >
+                <option value="font-sans">Sans</option>
+                <option value="font-serif">Serif</option>
+                <option value="font-mono">Mono</option>
+              </Select>
+            </div>
+            <div className="p-3">
+              <Label htmlFor="background" className="mr-2 ">
+                Theme:
+              </Label>
+              <Select
+                id="background"
+                value={background}
+                onChange={handleThemeChange}
+              >
+                <option value="bg-White">White</option>
+                <option value="bg-Dark">Dark</option>
+                <option value="bg-Light-blue ">Light Blue</option>
+                <option value="bg-Light-grey">Light Grey</option>
+                <option value="bg-Light-screen">Light Yellow</option>
+                <option value="bg-Sepia">Sepia</option>
+                <option value="bg-Wood-grain">Wood Grain</option>
+                <option value="bg-Dark-blue">Dark Blue</option>
+                <option value="bg-Dark-yellow">Dark Yellow</option>
+              </Select>
+            </div>
+          </div>
+        )}
         {/* Pagination */}
-        <div className="flex overflow-x-auto items-center sm:justify-center">
+        <div className="flex m-1 p-2 overflow-x-auto items-center sm:justify-center">
           <Button
             disabled={!chapter || !chapters || chapter.number === 1}
             onClick={() => navigateToChapter("prev")}
@@ -96,7 +186,7 @@ export default function ChapterPage() {
           </Button>
           <Select
             value={chapter ? chapter.number : ""}
-            className="mx-2"
+            className="w-full mx-1 sm:w-1/2 lg:w-1/3"
             onChange={(event) => {
               const newChapterNumber = event.target.value;
               const newChapter = chapters.find(
@@ -110,7 +200,7 @@ export default function ChapterPage() {
             {chapters &&
               chapters.map((chap, index) => (
                 <option key={index} value={chap.number}>
-                  Chapter {chap.number}
+                  Chapter {chap.number} : {chap.title}
                 </option>
               ))}
           </Select>
@@ -127,10 +217,15 @@ export default function ChapterPage() {
         </div>
       </div>
       {/* content  */}
-      <section className="p-3 flex flex-col max-w-6xl mx-auto min-h-screen">
-        <h1 className="text-3xl mt-10 p-3 text-center font-serif max-w-2xl mx-auto lg:text-4xl">
-          {chapter && chapter.title}
+      <section className="p-3 flex flex-col">
+        <h1 className="text-3xl p-3 text-center font-serif max-w-2xl mx-auto lg:text-4xl">
+          {/* Show Novel title */}
+          {novelTitle}
         </h1>
+        <h2 className="text-2xl p-3 text-center font-serif max-w-2xl mx-auto lg:text-3xl">
+          {"Chapter "}
+          {chapter && chapter.number} - {chapter && chapter.title}
+        </h2>
 
         <div className="flex justify-between p-3 border-b border-slate-500 mx-auto w-full max-w-2xl text-xs">
           <span>
@@ -141,15 +236,21 @@ export default function ChapterPage() {
           </span>
         </div>
         <div
-          className="p-3 max-w-2xl mx-auto w-full chapter-content"
+          className={`p-3 max-w-2xl mx-auto w-full chapter-content ${fontSize} ${fontFamily}`}
           dangerouslySetInnerHTML={{ __html: chapter && chapter.content }}
         ></div>
         <div className="max-w-4xl mx-auto w-full">{/* <CallToAction /> */}</div>
-        <CommentSection chapterId={chapter._id} />
+        {/* Comment section  */}
+        <CommentSection
+          chapterId={chapter && chapter._id}
+          novelId={chapter && chapter.novelId}
+        />
+
+        {/* recent chapters */}
         {chapters && (
           <div className="flex flex-col gap-4 mt-10">
             <h2 className="text-2xl font-bold">Reading History</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {chapters.slice(0, 2).map((chapter) => (
                 <div key={chapter._id} className="flex flex-col">
                   <Link to={`/novels/${novelId}/chapters/${chapter._id}`}>
