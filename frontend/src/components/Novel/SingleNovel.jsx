@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { FaFileLines, FaStar, FaTags, FaUser } from "react-icons/fa6";
 import TimeDifference from "../TimeDifference";
 import { FaInfoCircle } from "react-icons/fa";
+import CommentSection from "../Comment/CommentSection";
 
 export default function SingleNovel() {
   const { novelId } = useParams();
@@ -179,9 +180,8 @@ export default function SingleNovel() {
           </p>
         </Tabs.Item>
         <Tabs.Item title="Comments">
-          <p className="text-lg text-justify text-gray-500 dark:text-gray-400">
-            Comment section of novel
-          </p>
+          {/* show comments here */}
+          <CommentSection novelId={novel && novel._id} />
         </Tabs.Item>
       </Tabs>
       <div className="mt-6">
