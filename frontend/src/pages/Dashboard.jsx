@@ -1,28 +1,30 @@
-import { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import ManageNovel from "../components/Novel/ManageNovel";
-import ManageChapter from "../components/Chapter/ManageChapter";
-import UserProfile from "./UserProfile";
+import DashboardComp from "../components/Dashboard/DashboardComp";
 import DashSidebar from "../components/Dashboard/DashSidebar";
 import DashUsers from "../components/Dashboard/DashUsers";
-import DashComments from "../components/Dashboard/DashComments";
 import CreateNovel from "../components/Novel/CreateNovel";
-import DashboardComp from "../components/Dashboard/DashboardComp";
+import ManageNovel from "../components/Novel/ManageNovel";
 import DashboardManagePage from "../components/Dashboard/DashboardManagePage";
-import SearchBar from "../components/SearchBar";
-import { Avatar, Button, Dropdown, Navbar } from "flowbite-react";
-import { FaBook, FaCog, FaInbox, FaSignOutAlt, FaUser } from "react-icons/fa";
-import { HiViewGrid } from "react-icons/hi";
-import { useSelector } from "react-redux";
+import DashComments from "../components/Dashboard/DashComments";
+import { useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import DashHeader from "../components/Dashboard/DashHeader";
+import { useMediaQuery } from "react-responsive";
+import { Breadcrumb } from "flowbite-react";
+import { HiHome } from "react-icons/hi";
 
-export default function Dashboard() {
+const Dashboard = () => {
   const location = useLocation();
-  const [tab, setTab] = useState("");
-  const { currentUser } = useSelector((state) => state.user);
-  const [isOpen, setIsOpen] = useState(false);
-  const handleToggle = () => {
-    setIsOpen(!isOpen);
+  const [tab, setTab] = useState("dash");
+  const isLargeScreen = useMediaQuery({ query: "(min-width: 1024px)" });
+  const [isSidebarOpen, setSidebarOpen] = useState(isLargeScreen);
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!isSidebarOpen);
   };
+  useEffect(() => {
+    setSidebarOpen(isLargeScreen);
+  }, [isLargeScreen]);
+
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
     const tabFromUrl = urlParams.get("tab");
@@ -31,72 +33,20 @@ export default function Dashboard() {
     }
   }, [location.search]);
   return (
-    // <div className="min-h-screen flex flex-col md:flex-row">
-    // {/* Sidebar */}
-    <div className="flex">
-      <DashSidebar className="z-10" />
-      <div
-        className={`flex flex-col w-full transition-transform duration-200 ease-in-out transform ${
-          isOpen ? "translate-x-64" : "translate-x-0"
-        }`}
-      >
-        {/* navbar  */}
-        <Navbar className=" flex bg-nyanza border-b-2">
-          <h1 className="text-2xl">Dashboard</h1>
-          {/* Search bar */}
-          <SearchBar />
-          <div className="flex gap-2 md:order-2">
-            {/* Dropdown menu for dashboard, library, settings, and sign out */}
-            {currentUser ? (
-              <Dropdown
-                arrowIcon={true}
-                inline
-                label={
-                  <Avatar alt="user" img={currentUser.profilePicture} rounded />
-                }
-              >
-                <Dropdown.Header>
-                  <span className="block text-sm">@{currentUser.username}</span>
-                  <span className="block text-sm font-medium truncate">
-                    {currentUser.email}
-                  </span>
-                </Dropdown.Header>
-                <Link to={"/profile"}>
-                  <Dropdown.Item icon={FaUser}>My Profile</Dropdown.Item>
-                </Link>
-                <Link to={"/dashboard?tab=dash"}>
-                  <Dropdown.Item icon={HiViewGrid}>
-                    Author Dashboard
-                  </Dropdown.Item>
-                </Link>
-                <Link to={"*"}>
-                  <Dropdown.Item icon={FaInbox}>Inbox</Dropdown.Item>
-                </Link>
-                <Dropdown.Divider />
-                <Link to={"/library"}>
-                  <Dropdown.Item icon={FaBook}>Library</Dropdown.Item>
-                </Link>
-                <Dropdown.Divider />
-                <Link to={"*"}>
-                  <Dropdown.Item icon={FaCog}>Setting</Dropdown.Item>
-                </Link>
-                <Dropdown.Item
-                  icon={FaSignOutAlt}
-                  // onClick={handleSignout}
-                >
-                  Sign out
-                </Dropdown.Item>
-              </Dropdown>
-            ) : (
-              <Link to="/sign-in">
-                <Button gradientDuoTone="purpleToBlue" outline>
-                  Sign In
-                </Button>
-              </Link>
-            )}
-          </div>
-        </Navbar>
-        <div className="bg-white container mx-auto py-8 px-4 content flex-grow">
+    <div className="flex flex-col h-screen">
+      <DashHeader toggleSidebar={toggleSidebar} />
+      <div className="flex flex-row flex-grow overflow-hidden">
+        <div className="sticky">{isSidebarOpen && <DashSidebar />}</div>
+        <div className="flex-grow m-1 p-1 overflow-auto">
+          <Breadcrumb
+            aria-label="Breadcrumb"
+            className="bg-gray-50 px-5 py-3 dark:bg-gray-800"
+          >
+            <Breadcrumb.Item href="/dashboard" icon={HiHome}>
+              Home
+            </Breadcrumb.Item>
+            <Breadcrumb.Item href="#">{tab}</Breadcrumb.Item>
+          </Breadcrumb>
           {/* dashboard comp */}
           {tab === "dash" && <DashboardComp />}
           {/* users */}
@@ -113,14 +63,6 @@ export default function Dashboard() {
       </div>
     </div>
   );
-}
+};
 
-// {/* Dark mode button */}
-//           {/* <Button
-//           className="w-12 h-10 hidden sm:inline"
-//           color="gray"
-//           pill
-//           onClick={() => dispatch(toggleTheme())}
-//         >
-//           {theme === "light" ? <FaSun /> : <FaMoon />}
-//         </Button> */}
+export default Dashboard;

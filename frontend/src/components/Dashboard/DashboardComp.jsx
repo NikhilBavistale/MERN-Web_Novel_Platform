@@ -5,10 +5,13 @@ import {
   HiArrowNarrowUp,
   HiBookOpen,
   HiDocumentText,
+  HiMenu,
   HiOutlineUserGroup,
+  HiX,
 } from "react-icons/hi";
 import { Button, Table } from "flowbite-react";
 import { Link } from "react-router-dom";
+import { useMediaQuery } from "react-responsive";
 
 export default function DashboardComp() {
   const [users, setUsers] = useState([]);
@@ -23,6 +26,12 @@ export default function DashboardComp() {
   const [lastMonthComments, setLastMonthComments] = useState(0);
   const [publishError, setPublishError] = useState(null);
   const { currentUser } = useSelector((state) => state.user);
+  const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
+  const [isSidebarOpen, setSidebarOpen] = useState(!isMobile);
+
+  useEffect(() => {
+    setSidebarOpen(!isMobile);
+  }, [isMobile]);
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -67,7 +76,7 @@ export default function DashboardComp() {
     };
     const fetchComments = async () => {
       try {
-        const res = await fetch("/api/comment/getcomments?limit=5");
+        const res = await fetch("/api/comments?limit=5");
         const data = await res.json();
         if (res.ok) {
           setComments(data.comments);
@@ -86,7 +95,7 @@ export default function DashboardComp() {
     fetchAllChapters();
   }, [currentUser]);
   return (
-    <div className="p-3 md:mx-auto">
+    <div className="p-1 m-1">
       <div className="flex-wrap flex gap-4 justify-center">
         {currentUser.isAdmin ? (
           // total user count and last month joined
@@ -169,9 +178,9 @@ export default function DashboardComp() {
         </div>
       </div>
       {/* Recent users, novels, comments, chapters */}
-      <div className="flex flex-wrap gap-4 py-3 mx-auto justify-center">
+      <div className="flex flex-wrap gap-4 py-3 justify-center">
         {currentUser.isAdmin ? (
-        // Recent users
+          // Recent users
           <div className="flex flex-col w-full md:w-auto shadow-md p-2 rounded-md dark:bg-gray-800">
             <div className="flex justify-between  p-3 text-sm font-semibold">
               <h1 className="text-center p-2">Recent users</h1>
@@ -202,7 +211,7 @@ export default function DashboardComp() {
             </Table>
           </div>
         ) : (
-        // Recent novels
+          // Recent novels
           <div className="flex flex-col w-full md:w-auto shadow-md p-2 rounded-md dark:bg-gray-800">
             <div className="flex justify-between  p-3 text-sm font-semibold">
               <h1 className="text-center p-2">Recent novels</h1>
