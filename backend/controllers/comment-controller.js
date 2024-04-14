@@ -21,6 +21,18 @@ export const createComment = async (req, res, next) => {
     next(error);
   }
 };
+// Fetch all comments
+export const getAllComments = async (req, res, next) => {
+  try {
+    const comments = await Comment.find();
+    if (!comments) {
+      return next(errorHandler(404, "Comments not found"));
+    }
+    res.json(comments);
+  } catch (error) {
+    next(error);
+  }
+};
 
 // Fetch comments based on novelId
 export const getCommentsByNovel = async (req, res, next) => {

@@ -2,6 +2,7 @@ import express from "express";
 import {
   createComment,
   deleteComment,
+  getAllComments,
   getCommentsByChapter,
   getCommentsByNovel,
   updateComment,
@@ -10,6 +11,7 @@ import { verifyToken } from "../utils/verifyUser.js";
 const router = express.Router();
 
 router.post("/", verifyToken, createComment);
+router.get("/", verifyToken, getAllComments);
 router.get("/novel/:novelId", getCommentsByNovel);
 router.get("/chapter/:chapterId", getCommentsByChapter);
 router.put("/:commentId", verifyToken, updateComment);

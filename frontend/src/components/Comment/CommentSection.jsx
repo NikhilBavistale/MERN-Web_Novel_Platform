@@ -77,56 +77,6 @@ export default function CommentSection({ chapterId, novelId }) {
   };
   
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   if (comment.length > 200) {
-  //     setCommentError("Comment cannot be more than 200 characters");
-  //     return;
-  //   }
-  //   try {
-  //     const requestBody = {
-  //       content: comment,
-  //       novelId,
-  //       userId: currentUser._id,
-  //       targetType: chapterId ? "chapter" : "novel",
-  //     };
-  //     if (chapterId) {
-  //       requestBody.chapterId = chapterId;
-  //     }
-  //     const res = await fetch("/api/comments", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(requestBody),
-  //     });
-  //     const data = await res.json();
-  //     if (!res.ok) {
-  //       throw new Error(data.message || "Something went wrong");
-  //     }
-  //     if (res.ok) {
-  //       setComment("");
-  //       setCommentError(null);
-  //       // const newComment = {
-  //       //   ...data,
-  //       //   user: {
-  //       //     _id: currentUser._id,
-  //       //     username: currentUser.username,
-  //       //     profilePicture: currentUser.profilePicture,
-  //       //   },
-  //       // };
-  //       // if (!newComment._id) {
-  //       //   throw new Error("New comment does not have a valid identifier (_id)");
-  //       // }
-  //       // setComments([...comments, newComment]);
-  //       setComments([...comments, data]);
-  //     }
-  //   } catch (error) {
-  //     setError(error.message);
-  //   }
-  // };
-
   const handleLike = async (commentId) => {
     try {
       if (!currentUser) {
