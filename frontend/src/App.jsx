@@ -8,7 +8,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import Dashboard from "./pages/Dashboard";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
-import AdminRoute from "./components/AdminRoute";
+// import AdminRoute from "./components/AdminRoute";
 import CreateChapter from "./components/Chapter/CreateChapter";
 import UpdateChapter from "./components/Chapter/UpdateChapter";
 import SingleNovel from "./components/Novel/SingleNovel";

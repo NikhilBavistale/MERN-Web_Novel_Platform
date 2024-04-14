@@ -2,17 +2,25 @@ import { Alert, Button, TextInput } from "flowbite-react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "react-circular-progressbar/dist/styles.css";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import ToastComponent from "../ToastComponent";
 
 export default function CreateChapter() {
   const [formData, setFormData] = useState({});
   const [publishError, setPublishError] = useState(null);
   const [publishSuccess, setPublishSuccess] = useState(null);
+  const [toastMessage, setToastMessage] = useState(null);
   const { novelId } = useParams();
-
+  const location = useLocation();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (location.state?.isFirstChapter) {
+      setToastMessage("Write first chapter"); 
+    }
+  }, [location.state]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,9 +40,7 @@ export default function CreateChapter() {
       }
       setPublishSuccess("Chapter published successfully");
       setTimeout(() => {
-        // navigate(`/manage-chapters/${novelId}`);
         navigate(`/novels/${novelId}/manage`);
-        
       }, 2000);
     } catch (error) {
       setPublishError("Something went wrong");
@@ -42,6 +48,11 @@ export default function CreateChapter() {
   };
   return (
     <div className="p-3 max-w-3xl mx-auto min-h-screen">
+      {toastMessage && (
+        <div className="fixed bottom-5 left-5">
+          <ToastComponent message={toastMessage} type="info" />
+        </div>
+      )}
       <h1 className="text-center text-3xl my-7 font-semibold">
         Post a Chapter
       </h1>

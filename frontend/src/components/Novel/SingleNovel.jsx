@@ -54,6 +54,24 @@ export default function SingleNovel() {
     fetchNovelAndChapters();
   }, [novelId]);
 
+  const addNovelToFavorite = async () => {
+    try {
+      const response = await fetch(`/api/libraries/favorite/${novelId}`, {
+        method: 'POST',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to add novel to favorites');
+      }
+
+      // Handle success message or update UI as required
+      console.log('Novel added to favorites successfully');
+    } catch (error) {
+      console.error('Error adding novel to favorites:', error);
+      setPublishError(error.message);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -121,10 +139,7 @@ export default function SingleNovel() {
             >
               Read Now
             </Button>
-            <Button
-              onClick={() => navigate(`/library`)}
-              gradientDuoTone="purpleToPink"
-            >
+            <Button onClick={addNovelToFavorite} gradientDuoTone="purpleToPink">
               Add To Library
             </Button>
           </div>

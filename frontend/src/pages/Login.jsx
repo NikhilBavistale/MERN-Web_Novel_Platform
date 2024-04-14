@@ -8,10 +8,12 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import OAuth from "../components/OAuth";
 import { Alert, Button, Spinner, TextInput } from "flowbite-react";
+import ToastComponent from "../components/ToastComponent";
 
 const Login = () => {
   const [formData, setFormData] = useState({});
   const { loading, error: errorMessage } = useSelector((state) => state.user);
+  const [userSuccess, setUserSuccess] = useState(null);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -38,7 +40,10 @@ const Login = () => {
 
       if (res.ok) {
         dispatch(loginSuccess(data));
-        navigate("/");
+        setUserSuccess("Login successfully");
+        setTimeout(() => {
+          navigate("/");
+        }, 2000);
       }
     } catch (error) {
       dispatch(loginFailure(error.message));
@@ -109,10 +114,15 @@ const Login = () => {
                 Sign Up
               </Link>
             </div>
+            {userSuccess && (
+              <div className="fixed bottom-5 left-5">
+                <ToastComponent message={userSuccess} type="success" />
+              </div>
+            )}
             {errorMessage && (
-              <Alert className="mt-5" color="failure">
-                {errorMessage}
-              </Alert>
+              <div>
+                <ToastComponent message={errorMessage} type="error" />
+              </div>
             )}
           </div>
         </div>

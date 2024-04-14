@@ -17,6 +17,7 @@ import {
 } from "firebase/storage";
 import { app } from "../../firebase";
 import { CircularProgressbar } from "react-circular-progressbar";
+import ToastComponent from "../ToastComponent";
 
 const CreateNovel = () => {
   const [file, setFile] = useState(null);
@@ -112,10 +113,11 @@ const CreateNovel = () => {
       }
       if (response.ok) {
         setPublishError(null);
-        console.log(formData);
-
         setPublishSuccess("Successfully created novel");
-        navigate(`/create-chapter/${novel._id}`);
+        setTimeout(() => {
+          // navigate(`/create-chapter/${novel._id}`);
+          navigate(`/create-chapter/${novel._id}`, { state: { isFirstChapter: true } });
+        }, 2000);
       }
     } catch (error) {
       setPublishError("Failed to publish novel");
@@ -247,14 +249,14 @@ const CreateNovel = () => {
           Upload Novel
         </Button>
         {publishError && (
-          <Alert className="mt-5 md:col-span-2" color="failure">
-            {publishError}
-          </Alert>
+          <div>
+            <ToastComponent message={publishError} type="error" />
+          </div>
         )}
         {publishSuccess && (
-          <Alert className="mt-5 md:col-span-2" color="success">
-            {publishSuccess}
-          </Alert>
+          <div className="fixed bottom-5 left-5">
+            <ToastComponent message={publishSuccess} type="success" />
+          </div>
         )}
       </form>
     </div>

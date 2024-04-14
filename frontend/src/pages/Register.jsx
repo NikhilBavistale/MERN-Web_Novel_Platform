@@ -54,7 +54,7 @@ export default function Register() {
       >
         <div className="w-full h-100">
           <h1 className="text-xl md:text-2xl font-bold leading-tight">
-            Sign Up to Create your account
+            Sign Up to Create account
           </h1>
 
           {/* Sign Up Form */}

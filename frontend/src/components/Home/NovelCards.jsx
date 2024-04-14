@@ -13,12 +13,27 @@ import { Navigation, Pagination, Keyboard } from "swiper/modules";
 import { Link } from "react-router-dom";
 import { FaHeart } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { addFavoriteNovel } from "../../redux/user/userSlice";
 
 const NovelCards = ({ headline, novels }) => {
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
+  const addNovelToFavorite = async (novel) => {
+    try {
+      const response = await fetch(`/api/libraries/favorite/${novel._id}`, {
+        method: 'POST',
+      });
 
+      if (!response.ok) {
+        throw new Error('Failed to add novel to favorites');
+      }
+
+      // Handle success message or update UI as required
+      console.log('Novel added to favorites successfully');
+    } catch (error) {
+      console.error('Error adding novel to favorites:', error);
+      setPublishError(error.message);
+    }
+  };
   return (
     <div className="px-4 py-8 lg:px-24">
       <h2 className="text-5xl text-center font-bold text-black my-1">
@@ -63,7 +78,7 @@ const NovelCards = ({ headline, novels }) => {
                     />
                     <div className="absolute top-3 right-3 bg-blue-600 hover:bg-black p-2 rounded cursor-pointer transition-colors duration-200">
                       <FaHeart
-                        onClick={() => handleAddToFavorites(novel)}
+                        onClick={() => addNovelToFavorite(novel)}
                         className="w-4 h-4 text-white"
                       />
                     </div>

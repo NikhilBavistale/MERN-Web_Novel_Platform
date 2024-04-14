@@ -3,6 +3,7 @@ import { Button, Modal, Spinner, Table } from "flowbite-react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import ToastComponent from "../ToastComponent";
 
 const getNovelsUrl = (isAdmin, userId, startIndex) => {
   const base = isAdmin
@@ -18,6 +19,7 @@ const ManageNovel = () => {
   const [showModal, setShowModal] = useState(false);
   const [novelIdToDelete, setNovelIdToDelete] = useState("");
   const [publishError, setPublishError] = useState(null);
+  const [publishSuccess, setPublishSuccess] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   useEffect(() => {
@@ -37,9 +39,9 @@ const ManageNovel = () => {
         if (res.ok) {
           setPublishError(null);
           setUserNovels(data);
-          if (data.length < 9) {
-            setShowMore(false);
-          }
+          // if (data.length < 9) {
+          //   setShowMore(false);
+          // }
         }
       } catch (error) {
         console.log(error.message);
@@ -66,6 +68,7 @@ const ManageNovel = () => {
         setUserNovels((prev) =>
           prev.filter((novel) => novel._id !== novelIdToDelete)
         );
+        setPublishSuccess("Novel deleted successfully");
       }
     } catch (error) {
       setPublishError(error.message);
@@ -116,7 +119,8 @@ const ManageNovel = () => {
                     </Table.Cell>
                     <Table.Cell>{novel.authorName}</Table.Cell>
                     <Table.Cell>
-                      {novel.genres.join(", ") || "Unknown"}
+                      {novel.genres.map((genre) => genre.name).join(", ") ||
+                        "Unknown"}
                     </Table.Cell>
                     <Table.Cell>
                       <span
@@ -171,9 +175,14 @@ const ManageNovel = () => {
       )}
 
       {publishError && (
-        <Alert className="mt-5" color="failure">
-          {publishError}
-        </Alert>
+        <div>
+          <ToastComponent message={publishError} type="error" />
+        </div>
+      )}
+      {publishSuccess && (
+        <div>
+          <ToastComponent message={publishSuccess} type="success" />
+        </div>
       )}
       <Modal
         show={showModal}

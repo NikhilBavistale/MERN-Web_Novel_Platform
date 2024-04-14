@@ -76,10 +76,10 @@ export default function DashboardComp() {
     };
     const fetchComments = async () => {
       try {
-        const res = await fetch("/api/comments?limit=5");
+        const res = await fetch("/api/comments");
         const data = await res.json();
         if (res.ok) {
-          setComments(data.comments);
+          setComments(data);
           setTotalComments(data.totalComments);
           setLastMonthComments(data.lastMonthComments);
         }
@@ -93,6 +93,7 @@ export default function DashboardComp() {
     }
     fetchNovels();
     fetchAllChapters();
+    fetchComments();
   }, [currentUser]);
   return (
     <div className="p-1 m-1">
@@ -144,7 +145,7 @@ export default function DashboardComp() {
               <h3 className="text-gray-500 text-md uppercase">
                 Total Comments
               </h3>
-              <p className="text-2xl">{totalComments}</p>
+              <p className="text-2xl">{comments.length}</p>
             </div>
             <HiAnnotation className="bg-indigo-600  text-white rounded-full text-5xl p-3 shadow-lg" />
           </div>

@@ -29,9 +29,9 @@ import {
   signOut,
 } from "../redux/user/userSlice";
 import { useDispatch } from "react-redux";
-import { HiOutlineExclamationCircle } from "react-icons/hi";
+import { HiCheck, HiOutlineExclamationCircle } from "react-icons/hi";
 import { Link, useNavigate } from "react-router-dom";
-
+import ToastComponent from "../components/ToastComponent";
 export default function UserProfile() {
   const { currentUser, error, loading } = useSelector((state) => state.user);
   const [imageFile, setImageFile] = useState(null);
@@ -46,7 +46,7 @@ export default function UserProfile() {
   const filePickerRef = useRef();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -96,7 +96,7 @@ export default function UserProfile() {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-};
+  };
 
   const handleUserUpdate = async (e) => {
     e.preventDefault();
@@ -124,17 +124,24 @@ export default function UserProfile() {
         const data = await res.json();
         dispatch(updateFailure(data.message));
         setUpdateUserError(data.message);
+        return <ToastComponent message={data.message} type="error" />;
       } else {
         const data = await res.json();
         dispatch(updateSuccess(data));
         setUpdateUserSuccess("User's profile updated successfully");
+        return (
+          <ToastComponent
+            message="User's profile updated successfully"
+            type="success"
+          />
+        );
       }
     } catch (error) {
       dispatch(updateFailure(error.message));
       setUpdateUserError(error.message);
     }
   };
-  
+
   const handleDeleteUser = async () => {
     setShowModal(false);
     try {
@@ -345,6 +352,21 @@ export default function UserProfile() {
         </span>
       </div>
       {updateUserSuccess && (
+        <div className="fixed bottom-5 left-5">
+          <ToastComponent message={updateUserSuccess} type="success" />
+        </div>
+      )}
+      {updateUserError && (
+        <div className="fixed bottom-5 left-5">
+          <ToastComponent message={updateUserError} type="error" />
+        </div>
+      )}
+      {error && (
+        <div className="fixed bottom-5 left-5">
+          <ToastComponent message={error} type="error" />
+        </div>
+      )}
+      {/* {updateUserSuccess && (
         <Alert color="success" className="mt-5">
           {updateUserSuccess}
         </Alert>
@@ -358,7 +380,7 @@ export default function UserProfile() {
         <Alert color="failure" className="mt-5">
           {error}
         </Alert>
-      )}
+      )} */}
       <Modal
         show={showModal}
         onClose={() => setShowModal(false)}
