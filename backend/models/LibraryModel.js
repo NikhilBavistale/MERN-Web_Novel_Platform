@@ -1,7 +1,7 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+//models/LibraryModel.js
+import mongoose from "mongoose";
 
-const librarySchema = new Schema(
+const librarySchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -26,8 +26,8 @@ const librarySchema = new Schema(
       default: 0,
     },
     bookmark_id: {
-      type: Schema.Types.ObjectId,
-      ref: "chapter",
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "Chapter",
     },
   },
   { timestamps: true }
@@ -37,4 +37,4 @@ librarySchema.index({ userId: 1, novelId: 1 }, { unique: true });
 
 const Library = mongoose.model("Library", librarySchema);
 
-module.exports = Library;
+export default Library;

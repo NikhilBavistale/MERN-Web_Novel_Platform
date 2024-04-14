@@ -7,6 +7,7 @@ import novelRoutes from "./routes/novel-route.js";
 import chapterRoutes from "./routes/chapter-route.js";
 import genreRoutes from "./routes/genre-route.js";
 import commentRoutes from "./routes/comment-route.js";
+import libraryRoutes from "./routes/library-route.js";
 import cookieParser from "cookie-parser";
 import path from "path";
 dotenv.config();
@@ -50,6 +51,7 @@ app.use("/api/novels", novelRoutes);
 app.use("/api/novels", chapterRoutes);
 app.use('/api/comments', commentRoutes);
 app.use("/api/genres", genreRoutes);
+app.use("/api/libraries", libraryRoutes);
 // Then use the catch-all route handler
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "frontend", "dist", "index.html"));
